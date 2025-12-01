@@ -9,7 +9,8 @@ defmodule ElixirMinecraftBot.Application do
   def start(_type, _args) do
     children = [
       # Starts a worker by calling: ElixirMinecraftBot.Worker.start_link(arg)
-      # {ElixirMinecraftBot.Worker, arg}
+      ElixirMinecraftBot.Rcon.RconConnection,
+      ElixirMinecraftBot.Bot.Consumer
     ]
 
     # See https://hexdocs.pm/elixir/Supervisor.html
