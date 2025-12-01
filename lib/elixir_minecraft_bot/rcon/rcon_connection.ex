@@ -13,10 +13,11 @@ defmodule ElixirMinecraftBot.Rcon.RconConnection do
   @impl true
   def init(_) do
     send(self(), :connect)
+    {:ok, %{conn: nil}}
   end
 
   @impl true
-  def handle_server_info(:connect, state) do
+  def handle_info(:connect, state) do
     host = Application.get_env(:rcon, :host)
     port = Application.get_env(:rcon, :port)
     password = Application.get_env(:rcon, :password)
