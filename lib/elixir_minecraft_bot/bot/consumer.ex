@@ -1,5 +1,5 @@
 defmodule ElixirMinecraftBot.Bot.Consumer do
-  alias Nostrum.Api.Message
+  alias ElixirMinecraftBot.DiscordClient
   alias ElixirMinecraftBot.Rcon.RconAPI
   require Logger
 
@@ -15,10 +15,10 @@ defmodule ElixirMinecraftBot.Bot.Consumer do
         "!status" ->
           case RconAPI.get_status() do
             {:ok, response} ->
-              Message.create(msg.channel_id, "Server says: \n```#{response}```")
+              DiscordClient.create_message(msg.channel_id, "Server says: \n```#{response}```")
 
             {:error, error} ->
-              Message.create(
+              DiscordClient.create_message(
                 msg.channel_id,
                 "Failed to fetch the status of the server. RCON Error: \n```#{error}```"
               )
@@ -27,10 +27,10 @@ defmodule ElixirMinecraftBot.Bot.Consumer do
         "!whitelist " <> username ->
           case RconAPI.whitelist_user(username) do
             {:ok, response} ->
-              Message.create(msg.channel_id, "RCON: \n```#{response}```")
+              DiscordClient.create_message(msg.channel_id, "RCON: \n```#{response}```")
 
             {:error, error} ->
-              Message.create(
+              DiscordClient.create_message(
                 msg.channel_id,
                 "Failed to whitelist the user. RCON Error: \n```#{error}```"
               )
@@ -39,10 +39,10 @@ defmodule ElixirMinecraftBot.Bot.Consumer do
         "!op " <> username ->
           case RconAPI.op_user(username) do
             {:ok, response} ->
-              Message.create(msg.channel_id, "RCON: \n```#{response}```")
+              DiscordClient.create_message(msg.channel_id, "RCON: \n```#{response}```")
 
             {:error, error} ->
-              Message.create(
+              DiscordClient.create_message(
                 msg.channel_id,
                 "Failed to whitelist the user. RCON Error: \n```#{error}```"
               )
