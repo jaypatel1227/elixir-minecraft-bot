@@ -3,15 +3,18 @@ defmodule ElixirMinecraftBot.Rcon.RconConnection do
   require Logger
 
   def start_link(_opts) do
+    Logger.info("Starting RCON connection GenServer")
     GenServer.start_link(__MODULE__, %{}, name: __MODULE__)
   end
 
   def send_command(command) do
+    Logger.info("Sending command to RCON server: #{command}")
     GenServer.call(__MODULE__, {:cmd, command})
   end
 
   @impl true
   def init(_) do
+    Logger.info("Initializing RCON connection")
     send(self(), :connect)
     {:ok, %{conn: nil}}
   end
@@ -22,15 +25,16 @@ defmodule ElixirMinecraftBot.Rcon.RconConnection do
     port = Application.get_env(:rcon, :port)
     password = Application.get_env(:rcon, :password)
 
-    Logger.info("Connecting to the RCON server at host: #{host}")
+    Logger.info("Attempting to connect to RCON server at #{host}:#{port}")
 
     with {:ok, conn} <- RCON.Client.connect(host, port),
          {:ok, conn, _} <- RCON.Client.authenticate(conn, password) do
-      Logger.info("Successfully connected to the RCON server")
+      Logger.info("Successfully connected and authenticated to RCON server at #{host}:#{port}")
       {:noreply, %{state | conn: conn}}
     else
       err ->
-        Logger.error("Failed to connect to the RCON Server: #{inspect(err)}")
+        Logger.error("Failed to connect to RCON server at #{host}:#{port}: #{inspect(err)}")
+        Logger.info("Retrying RCON connection in 5 seconds...")
         # Not trying exponential backoff here. Just keep trying I guess
         Process.send_after(self(), :connect, 5_000)
         {:noreply, %{state | conn: nil}}
@@ -38,17 +42,22 @@ defmodule ElixirMinecraftBot.Rcon.RconConnection do
   end
 
   @impl true
-  def handle_call({:cmd, _cmd}, _from, %{conn: nil} = state) do
+  def handle_call({:cmd, cmd}, _from, %{conn: nil} = state) do
+    Logger.error("Cannot execute command '#{cmd}': RCON not connected")
     {:reply, {:error, :not_connected}, state}
   end
 
   def handle_call({:cmd, cmd}, _from, %{conn: conn} = state) do
+    Logger.info("Executing RCON command: #{cmd}")
     # RCON.Client.exec returns {:ok, new_conn, response}
     case RCON.Client.exec(conn, cmd) do
       {:ok, new_conn, response} ->
+        Logger.info("RCON command '#{cmd}' executed successfully")
         {:reply, {:ok, response}, %{state | conn: new_conn}}
 
       {:error, reason} ->
+        Logger.error("RCON command '#{cmd}' failed: #{inspect(reason)}")
+        Logger.info("Forcing RCON reconnection due to command failure")
         # If the command fails, force a reconnect
         send(self(), :connect)
         {:reply, {:error, reason}, %{state | conn: nil}}
