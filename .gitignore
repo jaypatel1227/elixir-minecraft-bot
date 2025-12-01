@@ -25,3 +25,6 @@ elixir_minecraft_bot-*.tar
 # Ignore the .env file
 .env.exs
 .env
+
+# Test config with local credentials
+/config/test.exs

@@ -62,6 +62,37 @@ A Discord bot for managing Minecraft servers via RCON. This bot allows server ad
 - **RconAPI**: High-level API for executing Minecraft commands
 - **Bot.Consumer**: Handles Discord events and processes commands
 
+## Testing
+
+### Unit Tests
+
+Run unit tests (no server required):
+```bash
+mix test
+```
+
+### Integration Tests
+
+Integration tests run against a real Minecraft server. You'll need a local server with RCON enabled.
+
+1. Copy the test config example:
+   ```bash
+   cp config/test.exs.example config/test.exs
+   ```
+
+2. Edit `config/test.exs` with your local server's RCON password:
+   ```elixir
+   config :rcon,
+     host: "localhost",
+     port: 25575,
+     password: "YOUR_RCON_PASSWORD"
+   ```
+
+3. Run integration tests:
+   ```bash
+   mix test --include integration
+   ```
+
 ## Logging
 
 The bot logs extensive information to help with debugging:

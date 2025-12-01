@@ -1,0 +1,11 @@
+import Config
+
+# Local Minecraft server for integration tests
+config :rcon,
+  host: "localhost",
+  port: 25575,
+  password: "YOUR_RCON_PASSWORD"
+
+# Disable Discord in tests
+config :nostrum,
+  token: "fake_token_for_tests"
