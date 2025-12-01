@@ -39,7 +39,7 @@ cp .env.example .env
 | `RCON_PASSWORD` | Yes | RCON password (must match server) |
 | `RCON_HOST` | No | RCON server host (default: `localhost`) |
 | `RCON_PORT` | No | RCON server port (default: `25575`) |
-| `MAX_MEMORY` | No | Minecraft server memory (default: `8G`, Docker only) |
+| `MAX_MEMORY` | No | Minecraft server memory (default: `4G`, Docker only) |
 
 ## Docker Deployment
 
@@ -51,9 +51,58 @@ docker compose up -d
 
 ### Running with Modpacks
 
-1. Extract server pack to `server/modpacks/<name>/server/`
-2. Generate Docker files: `mix modpack.init <name>`
-3. Start: `docker compose -f docker-compose.yml -f server/modpacks/<name>/docker-compose.yml up -d --build`
+1. Download your modpack's server files (usually a zip)
+
+2. Extract to `server/modpacks/<name>/server/`:
+   ```bash
+   mkdir -p server/modpacks/my-modpack/server
+   unzip ServerPack.zip -d server/modpacks/my-modpack/server/
+   ```
+
+3. Check `variables.txt` for the required Java version:
+   - Minecraft 1.16 and below: Java 8
+   - Minecraft 1.17: Java 16
+   - Minecraft 1.18-1.20: Java 17
+   - Minecraft 1.21+: Java 21
+
+4. Generate Docker files:
+   ```bash
+   mix modpack.init <name> [java_version]
+   # Example: mix modpack.init my-modpack 17
+   ```
+
+5. Start the server and bot:
+   ```bash
+   docker compose -f docker-compose.yml -f server/modpacks/<name>/docker-compose.yml up -d --build
+   ```
+
+The generated Docker setup will:
+- Auto-accept Mojang's EULA
+- Skip Java version checks (uses the image's Java)
+- Enable RCON with password from `RCON_PASSWORD` env var
+- Enable whitelist and enforce-whitelist
+
+First startup may take several minutes as Forge/Fabric downloads and installs.
+
+### Modpack Directory Structure
+
+```
+server/modpacks/
+├── template/           # Templates (don't edit unless customizing)
+│   ├── Dockerfile.eex
+│   ├── docker-compose.yml.eex
+│   └── entrypoint.sh
+└── my-modpack/         # Your modpack
+    ├── Dockerfile      # Generated
+    ├── docker-compose.yml  # Generated
+    ├── entrypoint.sh   # Generated
+    └── server/         # Extracted server files
+        ├── mods/
+        ├── config/
+        ├── start.sh
+        ├── variables.txt
+        └── ...
+```
 
 ## Local Development
 

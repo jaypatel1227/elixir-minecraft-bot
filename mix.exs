@@ -23,7 +23,8 @@ defmodule ElixirMinecraftBot.MixProject do
   defp deps do
     [
       {:nostrum, "~> 0.10"},
-      {:rcon, "~> 0.4"}
+      {:rcon, "~> 0.4"},
+      {:socket, "~> 0.3"}
       # {:dep_from_hexpm, "~> 0.3.0"},
       # {:dep_from_git, git: "https://github.com/elixir-lang/my_dep.git", tag: "0.1.0"}
     ]
