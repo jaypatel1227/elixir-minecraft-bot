@@ -43,4 +43,24 @@ defmodule ElixirMinecraftBot.Rcon.RconAPI do
     Logger.info("Fetching server status")
     run_command("list")
   end
+
+  def tp(player, destination) do
+    run_command("tp #{player} #{destination}")
+  end
+
+  def set_time_day() do
+    run_command("time set day")
+  end
+
+  def say(message) do
+    run_command("say #{message}")
+  end
+
+  def whisper(player, message) do
+    run_command("tell #{player} #{message}")
+  end
+
+  def weather(type) when type in ~w(clear rain thunder) do
+    run_command("weather #{type}")
+  end
 end

@@ -57,9 +57,52 @@ defmodule ElixirMinecraftBot.Bot.Consumer do
 
               Message.create(
                 msg.channel_id,
-                "Failed to whitelist the user. RCON Error: \n```#{error}```"
+                "Failed to op the user. RCON Error: \n```#{error}```"
               )
           end
+
+        "!tp " <> args ->
+          case String.split(args, " ", parts: 2) do
+            [player, destination] ->
+              case RconAPI.tp(player, destination) do
+                {:ok, response} -> Message.create(msg.channel_id, "RCON: \n```#{response}```")
+                {:error, error} -> Message.create(msg.channel_id, "TP failed: \n```#{error}```")
+              end
+            _ ->
+              Message.create(msg.channel_id, "Usage: !tp <player> <destination>")
+          end
+
+        "!day" ->
+          case RconAPI.set_time_day() do
+            {:ok, response} -> Message.create(msg.channel_id, "RCON: \n```#{response}```")
+            {:error, error} -> Message.create(msg.channel_id, "Failed: \n```#{error}```")
+          end
+
+        "!say " <> message ->
+          case RconAPI.say(message) do
+            {:ok, _} -> Message.create(msg.channel_id, "Message sent to server")
+            {:error, error} -> Message.create(msg.channel_id, "Failed: \n```#{error}```")
+          end
+
+        "!whisper " <> args ->
+          case String.split(args, " ", parts: 2) do
+            [player, message] ->
+              case RconAPI.whisper(player, message) do
+                {:ok, _} -> Message.create(msg.channel_id, "Whispered to #{player}")
+                {:error, error} -> Message.create(msg.channel_id, "Failed: \n```#{error}```")
+              end
+            _ ->
+              Message.create(msg.channel_id, "Usage: !whisper <player> <message>")
+          end
+
+        "!weather " <> type when type in ["clear", "rain", "thunder"] ->
+          case RconAPI.weather(type) do
+            {:ok, response} -> Message.create(msg.channel_id, "RCON: \n```#{response}```")
+            {:error, error} -> Message.create(msg.channel_id, "Failed: \n```#{error}```")
+          end
+
+        "!weather " <> _ ->
+          Message.create(msg.channel_id, "Usage: !weather <clear|rain|thunder>")
 
         _ ->
           :ignore
