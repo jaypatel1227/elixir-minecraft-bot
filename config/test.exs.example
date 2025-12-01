@@ -1,11 +1,12 @@
 import Config
 
-# Local Minecraft server for integration tests
+# Integration tests run against a real Minecraft server with RCON enabled.
+# Copy this file to test.exs and set your local server's RCON password.
 config :rcon,
   host: "localhost",
   port: 25575,
-  password: "YOUR_RCON_PASSWORD"
+  password: "your_rcon_password"
 
-# Disable Discord in tests
+# Fake token - Discord is not used in tests
 config :nostrum,
   token: "fake_token_for_tests"

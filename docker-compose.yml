@@ -1,0 +1,36 @@
+services:
+  minecraft:
+    image: itzg/minecraft-server
+    container_name: minecraft
+    environment:
+      EULA: "TRUE"
+      ENABLE_RCON: "true"
+      RCON_PASSWORD: ${RCON_PASSWORD}
+      MAX_MEMORY: ${MAX_MEMORY:-8G}
+    ports:
+      - "25565:25565"
+    volumes:
+      - minecraft-data:/data
+    stop_grace_period: 60s
+    restart: unless-stopped
+
+  bot:
+    build:
+      context: .
+      dockerfile: bot/Dockerfile
+    container_name: discord-bot
+    environment:
+      RCON_HOST: minecraft
+      RCON_PORT: 25575
+      RCON_PASSWORD: ${RCON_PASSWORD}
+      DISCORD_TOKEN: ${DISCORD_TOKEN}
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+      - minecraft-data:/minecraft-data:ro
+      - ./backups:/backups
+    depends_on:
+      - minecraft
+    restart: unless-stopped
+
+volumes:
+  minecraft-data:
