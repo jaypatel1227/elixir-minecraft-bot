@@ -22,9 +22,14 @@ erl_crash.dump
 # Ignore package tarball (built via "mix hex.build").
 elixir_minecraft_bot-*.tar
 
-# Ignore the .env file
-.env.exs
+# Environment and secrets
 .env
-
-# Test config with local credentials
+/config/.env.exs
 /config/test.exs
+
+# Backups
+/backups/*
+!/backups/.gitkeep
+
+# Local docker overrides
+docker-compose.override.yml

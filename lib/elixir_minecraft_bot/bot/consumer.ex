@@ -3,6 +3,7 @@ defmodule ElixirMinecraftBot.Bot.Consumer do
 
   alias Nostrum.Api.Message
   alias ElixirMinecraftBot.Rcon.RconAPI
+  alias ElixirMinecraftBot.ServerControl
   require Logger
 
   def handle_event({:MESSAGE_CREATE, msg, _ws_state}) do
@@ -104,12 +105,31 @@ defmodule ElixirMinecraftBot.Bot.Consumer do
         "!weather " <> _ ->
           Message.create(msg.channel_id, "Usage: !weather <clear|rain|thunder>")
 
+        "!restart" ->
+          Message.create(msg.channel_id, "Restarting server...")
+          ServerControl.restart_server()
+          Message.create(msg.channel_id, "Server restart initiated")
+
+        "!stop" ->
+          Message.create(msg.channel_id, "Stopping server...")
+          ServerControl.stop_server()
+          Message.create(msg.channel_id, "Server stopped")
+
+        "!start" ->
+          Message.create(msg.channel_id, "Starting server...")
+          ServerControl.start_server()
+          Message.create(msg.channel_id, "Server start initiated")
+
+        "!backup" ->
+          Message.create(msg.channel_id, "Creating backup...")
+          ServerControl.backup_world()
+          Message.create(msg.channel_id, "Backup complete")
+
         _ ->
           :ignore
       end
     end
   end
 
-  # not trying to handle other kinds of events like MESSAGE_UPDATE, MESSAGE_REACTION_ADD or whatever for now
   def handle_event(_), do: :noop
 end
