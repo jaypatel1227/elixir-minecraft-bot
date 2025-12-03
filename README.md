@@ -41,6 +41,44 @@ cp .env.example .env
 | `RCON_PORT` | No | RCON server port (default: `25575`) |
 | `MAX_MEMORY` | No | Minecraft server memory (default: `4G`, Docker only) |
 
+## Backups
+
+### Creating Backups
+
+Use the `!backup` command in Discord to create a compressed backup of the world. The bot will:
+1. Run `save-all` on the server and wait for completion
+2. Create a compressed `.tar.gz` archive in the `backups/` directory
+3. Name it with a timestamp: `world-YYYYMMDD_HHMMSS.tar.gz`
+
+Backups are stored on the host machine in the `backups/` directory at the project root.
+
+### Restoring from Backup
+
+1. Stop the server:
+   ```bash
+   docker compose down
+   ```
+
+2. Extract the backup to a temporary location:
+   ```bash
+   tar -xzf backups/world-20251202_215900.tar.gz -C /tmp
+   ```
+
+3. Remove the current world and replace it with the backup:
+   ```bash
+   docker volume rm elixir_minecraft_bot_minecraft-data
+   docker compose up -d minecraft
+   docker compose down
+   docker run --rm -v elixir_minecraft_bot_minecraft-data:/data -v /tmp/world:/backup alpine cp -r /backup /data/world
+   ```
+
+4. Restart everything:
+   ```bash
+   docker compose up -d
+   ```
+
+Alternatively, if you have direct access to the volume location, you can manually replace the world folder.
+
 ## Docker Deployment
 
 Start vanilla server + bot:
