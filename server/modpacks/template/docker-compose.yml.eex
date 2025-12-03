@@ -1,0 +1,14 @@
+services:
+  minecraft:
+    build:
+      context: ./server/modpacks/<%= name %>
+      dockerfile: Dockerfile
+    image: minecraft-<%= name %>
+    environment:
+      MAX_MEMORY: "${MAX_MEMORY:-4G}"
+      RCON_PASSWORD: "${RCON_PASSWORD:-minecraft}"
+    volumes:
+      - <%= name %>-data:/server/world
+
+volumes:
+  <%= name %>-data:

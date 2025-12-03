@@ -1,4 +1,6 @@
 # Ignore all modpacks except template
 *
 !template/
+!template/**
 !.gitignore
+

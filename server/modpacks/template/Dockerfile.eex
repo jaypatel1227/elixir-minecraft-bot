@@ -1,0 +1,16 @@
+FROM eclipse-temurin:<%= java_version %>-jre
+
+WORKDIR /server
+
+COPY server/ .
+
+RUN chmod +x *.sh 2>/dev/null || true && \
+    sed -i 's/SKIP_JAVA_CHECK=false/SKIP_JAVA_CHECK=true/' variables.txt 2>/dev/null || true && \
+    echo "eula=true" > eula.txt
+
+COPY entrypoint.sh /entrypoint.sh
+RUN chmod +x /entrypoint.sh
+
+EXPOSE 25565 25575
+
+ENTRYPOINT ["/entrypoint.sh"]
