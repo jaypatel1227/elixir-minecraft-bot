@@ -12,6 +12,10 @@ defmodule ElixirMinecraftBot.Rcon.RconConnection do
     GenServer.call(__MODULE__, {:cmd, command})
   end
 
+  def reconnect do
+    GenServer.cast(__MODULE__, :reconnect)
+  end
+
   @impl true
   def init(_) do
     Logger.info("Initializing RCON connection")
@@ -39,6 +43,12 @@ defmodule ElixirMinecraftBot.Rcon.RconConnection do
         Process.send_after(self(), :connect, 5_000)
         {:noreply, %{state | conn: nil}}
     end
+  end
+
+  @impl true
+  def handle_cast(:reconnect, _state) do
+    send(self(), :connect)
+    {:noreply, %{conn: nil}}
   end
 
   @impl true

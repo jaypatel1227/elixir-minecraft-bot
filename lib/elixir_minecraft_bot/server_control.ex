@@ -1,18 +1,25 @@
 defmodule ElixirMinecraftBot.ServerControl do
   alias ElixirMinecraftBot.Rcon.RconAPI
+  alias ElixirMinecraftBot.Rcon.RconConnection
 
   def restart_server do
     {:ok, _response} = RconAPI.run_command("save-all")
-    System.cmd("docker", ["restart", "minecraft"])
+    result = System.cmd("docker", ["restart", "minecraft"])
+    RconConnection.reconnect()
+    result
   end
 
   def stop_server do
     {:ok, _response} = RconAPI.run_command("save-all")
-    System.cmd("docker", ["stop", "minecraft"])
+    result = System.cmd("docker", ["stop", "minecraft"])
+    RconConnection.reconnect()
+    result
   end
 
   def start_server do
-    System.cmd("docker", ["start", "minecraft"])
+    result = System.cmd("docker", ["start", "minecraft"])
+    RconConnection.reconnect()
+    result
   end
 
   def backup_world do
