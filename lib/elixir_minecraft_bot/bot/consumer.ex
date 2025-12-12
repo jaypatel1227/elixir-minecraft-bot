@@ -125,6 +125,25 @@ defmodule ElixirMinecraftBot.Bot.Consumer do
           ServerControl.backup_world()
           Message.create(msg.channel_id, "Backup complete")
 
+        "!help" ->
+          help_text = """
+          **Available Commands:**
+          `!status` - Shows players currently online
+          `!whitelist <user>` - Add player to whitelist
+          `!op <user>` - Grant operator permissions
+          `!tp <player> <dest>` - Teleport a player
+          `!day` - Set time to day
+          `!say <message>` - Broadcast message to server
+          `!whisper <player> <msg>` - Private message a player
+          `!weather <clear|rain|thunder>` - Change weather
+          `!restart` - Restart the server
+          `!stop` - Stop the server
+          `!start` - Start the server
+          `!backup` - Create world backup
+          `!help` - Show this help message
+          """
+          Message.create(msg.channel_id, help_text)
+
         _ ->
           :ignore
       end
