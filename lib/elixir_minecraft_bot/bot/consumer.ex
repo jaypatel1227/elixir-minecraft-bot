@@ -62,6 +62,40 @@ defmodule ElixirMinecraftBot.Bot.Consumer do
               )
           end
 
+        "!ban " <> args ->
+          Logger.info("Processing !ban command")
+
+          case String.split(args, " ", parts: 2) do
+            [user, reason] ->
+              case RconAPI.ban_user(user, reason) do
+                {:ok, response} -> Message.create(msg.channel_id, "RCON: \n```#{response}```")
+                {:error, error} -> Message.create(msg.channel_id, "Ban failed: \n```#{error}```")
+              end
+
+            [user] ->
+              case RconAPI.ban_user(user) do
+                {:ok, response} -> Message.create(msg.channel_id, "RCON: \n```#{response}```")
+                {:error, error} -> Message.create(msg.channel_id, "Ban failed: \n```#{error}```")
+              end
+          end
+
+        "!kick " <> args ->
+          Logger.info("Processing !kick command")
+
+          case String.split(args, " ", parts: 2) do
+            [user, reason] ->
+              case RconAPI.kick_user(user, reason) do
+                {:ok, response} -> Message.create(msg.channel_id, "RCON: \n```#{response}```")
+                {:error, error} -> Message.create(msg.channel_id, "Kick failed: \n```#{error}```")
+              end
+
+            [user] ->
+              case RconAPI.kick_user(user) do
+                {:ok, response} -> Message.create(msg.channel_id, "RCON: \n```#{response}```")
+                {:error, error} -> Message.create(msg.channel_id, "Kick failed: \n```#{error}```")
+              end
+          end
+
         "!tp " <> args ->
           case String.split(args, " ", parts: 2) do
             [player, destination] ->
@@ -131,6 +165,8 @@ defmodule ElixirMinecraftBot.Bot.Consumer do
           `!status` - Shows players currently online
           `!whitelist <user>` - Add player to whitelist
           `!op <user>` - Grant operator permissions
+          `!ban <user> [reason]` - Ban a player
+          `!kick <user> [reason]` - Kick a player
           `!tp <player> <dest>` - Teleport a player
           `!day` - Set time to day
           `!say <message>` - Broadcast message to server

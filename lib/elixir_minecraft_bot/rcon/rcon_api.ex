@@ -30,6 +30,24 @@ defmodule ElixirMinecraftBot.Rcon.RconAPI do
   end
 
   @doc """
+  Bans the specified user from the server.
+  """
+  def ban_user(mc_username, reason \\ nil) do
+    cmd = if reason, do: "ban #{mc_username} #{reason}", else: "ban #{mc_username}"
+    Logger.info("Banning user: #{mc_username}")
+    run_command(cmd)
+  end
+
+  @doc """
+  Kicks the specified user from the server.
+  """
+  def kick_user(mc_username, reason \\ nil) do
+    cmd = if reason, do: "kick #{mc_username} #{reason}", else: "kick #{mc_username}"
+    Logger.info("Kicking user: #{mc_username}")
+    run_command(cmd)
+  end
+
+  @doc """
   Gives the user admin permissions to be able to run commands from the server itself.
   Should ideally be a very small list of people since this bot should expose most things people need
   mc_username - The username of the user should be passed in. This is not the GUID and can be found on your mojang/microsoft account for the game
